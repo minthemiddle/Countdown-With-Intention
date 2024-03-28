@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Countdown Timer</title>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+        ></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <body class="flex items-center justify-center" x-data="countdownTimer()">
+        <div class="space-y-4 p-4">
+            <div>
+                <div
+                    class="flex cursor-default select-none items-center justify-between"
+                >
+                    <p
+                        class="inline-block text-5xl font-bold text-gray-600"
+                        x-html="formattedDuration"
+                    ></p>
+                </div>
+                <p
+                    class="inline-block cursor-default select-none text-gray-700"
+                >
+                    Ends at: <span x-text="endTime"></span>
+                </p>
+            </div>
+            <div>
+                <input
+                    type="range"
+                    min="0"
+                    max="60"
+                    x-model="durationMinutes"
+                    x-on:input="updateDuration"
+                    x-ref="durationSlider"
+                    class="w-full"
+                    name="durationSlider"
+                />
+            </div>
+            <div>
+                <div class="relative mt-2 rounded-md shadow-sm">
+                    <div
+                        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="h-5 w-5 text-gray-400"
+                        >
+                            <path d="M12 13V2l8 4-8 4" />
+                            <path d="M20.561 10.222a9 9 0 1 1-12.55-5.29" />
+                            <path d="M8.002 9.997a5 5 0 1 0 8.9 2.02" />
+                        </svg>
+                    </div>
+                    <input
+                        type="text"
+                        name="intention"
+                        id="intention"
+                        class="block w-full rounded-md border-0 py-1.5 pl-10 text-xl text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-transparent sm:leading-6"
+                        placeholder="Your intention"
+                    />
+                </div>
+            </div>
+            <div class="flex select-none items-center space-x-3">
+                <button
+                    @click="toggleTimer"
+                    :class="[
+                        isRunning ? 'rounded bg-red-100 px-4 py-2 hover:bg-red-200' : 'rounded bg-green-100 px-4 py-2 hover:bg-green-200',
+                        startButtonDisabled.disabled ? 'opacity-50 cursor-not-allowed' : ''
+                    ]"
+                    :disabled="startButtonDisabled.disabled"
+                    x-bind:title="startButtonDisabled.title"
+                    class="w-24"
+                >
+                    <span x-text="isRunning ? 'Stop' : 'Start'"></span>
+                </button>
+                <button
+                    @click="addMinutes(2)"
+                    class="flex-1 rounded bg-gray-100 px-4 py-2 hover:bg-blue-200"
+                >
+                    +2
+                </button>
+                <button
+                    @click="addMinutes(5)"
+                    class="flex-1 rounded bg-gray-100 px-4 py-2 hover:bg-blue-200"
+                >
+                    +5
+                </button>
+                <button
+                    @click="addMinutes(10)"
+                    class="flex-1 rounded bg-gray-100 px-4 py-2 hover:bg-blue-200"
+                >
+                    +10
+                </button>
+            </div>
+        </div>
+
+        <script>
+            function countdownTimer() {
+                return {
+                    durationMinutes: 0,
+                    remainingSeconds: 0,
+                    interval: null,
+                    isRunning: false,
+
+                    get formattedDuration() {
+                        let minutes = Math.floor(this.remainingSeconds / 60);
+                        let seconds = this.remainingSeconds % 60;
+                        return `${minutes.toString().padStart(2, "0")}<span class='text-gray-300'>:${seconds.toString().padStart(2, "0")}</span>`;
+                    },
+
+                    get startButtonDisabled() {
+                        const isDisabled = this.durationMinutes === 0;
+                        return {
+                            disabled: isDisabled,
+                            title: isDisabled ? "Pick minutes > 0" : "",
+                        };
+                    },
+
+                    get endTime() {
+                        const endDate = new Date(
+                            Date.now() + this.remainingSeconds * 1000,
+                        );
+                        return endDate.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        });
+                    },
+
+                    toggleTimer() {
+                        if (this.isRunning) {
+                            this.stopTimer();
+                        } else {
+                            this.startTimer();
+                        }
+                    },
+
+                    startTimer() {
+                        if (this.durationMinutes <= 0) {
+                            // Do not start the timer if durationMinutes is 0 or less
+                            return;
+                        }
+
+                        this.isRunning = true;
+                        this.remainingSeconds = this.durationMinutes * 60;
+                        const day = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+                        const startingTime = new Date().toLocaleTimeString(
+                            "en-US",
+                            {
+                                hour12: false,
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            },
+                        ); // HH:mm
+                        const initialDuration = this.durationMinutes;
+                        const initialEndTime = this.endTime;
+                        const intention =
+                            document.getElementById("intention").value;
+                        const timestamp = generateUniqueTimestamp();
+                        saveSessionToLocalStorage(
+                            day,
+                            startingTime,
+                            initialDuration,
+                            initialEndTime,
+                            intention,
+                        );
+                        this.interval = setInterval(() => {
+                            this.remainingSeconds--;
+                            this.updateSliderValue(); // Update the slider value
+                            if (this.remainingSeconds <= 0) {
+                                clearInterval(this.interval);
+                                this.isRunning = false;
+                                const actualEndTime =
+                                    new Date().toLocaleTimeString("en-US", {
+                                        hour12: false,
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    }); // HH:mm
+                                updateSessionWithActualEndTime(
+                                    timestamp,
+                                    actualEndTime,
+                                );
+
+                                // Play triple beep
+                                playBeepSound();
+                                setTimeout(playBeepSound, 1000);
+                                setTimeout(playBeepSound, 2000);
+                                setTimeout(playBeepSound, 3000);
+                            }
+                        }, 1000);
+                    },
+
+                    updateSliderValue() {
+                        // Convert remaining seconds to minutes and round down to the nearest whole number
+                        const remainingMinutes = Math.floor(
+                            this.remainingSeconds / 60,
+                        );
+                        // Update the slider's value to the remaining minutes
+                        this.$refs.durationSlider.value = remainingMinutes;
+                    },
+
+                    addMinutes(minutes) {
+                        this.remainingSeconds += minutes * 60;
+                    },
+
+                    stopTimer() {
+                        clearInterval(this.interval);
+                        this.isRunning = false;
+                        this.durationMinutes = 0;
+                        this.remainingSeconds = 0;
+                        const timestamp = generateUniqueTimestamp();
+                        const actualEndTime = new Date().toLocaleTimeString(
+                            "en-US",
+                            {
+                                hour12: false,
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            },
+                        ); // HH:mm
+                        updateSessionWithActualEndTime(
+                            timestamp,
+                            actualEndTime,
+                        );
+                    },
+
+                    updateDuration() {
+                        this.durationMinutes = parseInt(
+                            this.$refs.durationSlider.value,
+                        );
+                        this.remainingSeconds = this.durationMinutes * 60;
+                        this.updateSliderValue(); // Update the slider value when the user changes it
+                    },
+                };
+            }
+
+            function generateUniqueTimestamp() {
+                return new Date().getTime();
+            }
+
+            function saveSessionToLocalStorage(
+                day,
+                startingTime,
+                initialDuration,
+                initialEndTime,
+                intention,
+            ) {
+                const timestamp = generateUniqueTimestamp();
+                const sessionData = {
+                    day,
+                    startingTime,
+                    initialDuration,
+                    initialEndTime,
+                    intention,
+                };
+                localStorage.setItem(
+                    `session_${timestamp}`,
+                    JSON.stringify(sessionData),
+                );
+            }
+
+            function updateSessionWithActualEndTime(timestamp, actualEndTime) {
+                const currentSession = JSON.parse(
+                    localStorage.getItem(`session_${timestamp}`),
+                );
+                if (currentSession) {
+                    currentSession.actualEndTime = actualEndTime;
+                    localStorage.setItem(
+                        `session_${timestamp}`,
+                        JSON.stringify(currentSession),
+                    );
+                }
+            }
+
+            function playBeepSound() {
+                const audioContext = new AudioContext();
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                oscillator.type = "square";
+                oscillator.frequency.value = 200;
+                gain.gain.value = 0.5;
+
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        </script>
+    </body>
+</html>
