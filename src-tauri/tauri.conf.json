@@ -6,7 +6,7 @@
   },
   "package": {
     "productName": "Countdown With Intention",
-    "version": "1.0.0"
+    "version": "1.0.2"
   },
   "tauri": {
     "allowlist": {
@@ -31,7 +31,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "com.martinbetz.eu",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
