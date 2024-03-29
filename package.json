@@ -1,6 +1,6 @@
 {
-  "name": "Countdown With Intention",
-  "version": "1.0.0",
+  "name": "Countdown",
+  "version": "1.0.3",
   "type": "module",
   "scripts": {
     "tauri": "tauri"

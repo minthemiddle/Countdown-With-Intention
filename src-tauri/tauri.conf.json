@@ -5,8 +5,8 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Countdown With Intention",
-    "version": "1.0.2"
+    "productName": "Countdown",
+    "version": "1.0.3"
   },
   "tauri": {
     "allowlist": {
