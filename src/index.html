@@ -65,6 +65,7 @@
                     <input
                         type="text"
                         name="intention"
+                        x-model="intention"
                         id="intention"
                         class="block w-full rounded-md border-0 py-1.5 pl-10 text-xl text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-transparent sm:leading-6"
                         placeholder="Your intention"
@@ -112,6 +113,7 @@
                     remainingSeconds: 0,
                     interval: null,
                     isRunning: false,
+                    intention: "",
 
                     get formattedDuration() {
                         let minutes = Math.floor(this.remainingSeconds / 60);
@@ -164,9 +166,8 @@
                         ); // HH:mm
                         const initialDuration = this.durationMinutes;
                         const initialEndTime = this.endTime;
-                        const intention =
-                            document.getElementById("intention").value;
                         const timestamp = generateUniqueTimestamp();
+                        const intention = this.intention;
                         saveSessionToLocalStorage(
                             day,
                             startingTime,
