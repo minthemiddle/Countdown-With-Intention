@@ -221,7 +221,13 @@
                     },
 
                     addMinutes(minutes) {
-                        this.remainingSeconds += minutes * 60;
+                        if (!this.isRunning) {
+                            this.durationMinutes += minutes;
+                            this.remainingSeconds = this.durationMinutes * 60;
+                            this.updateSliderValue();
+                        } else {
+                            this.remainingSeconds += minutes * 60;
+                        }
                     },
 
                     stopTimer() {
