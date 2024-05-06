@@ -25,7 +25,8 @@
                 <p
                     class="inline-block cursor-default select-none text-gray-700"
                 >
-                    Ends at: <span x-text="endTime"></span>
+                    Ends at: <span x-text="endTime"></span> &#x2022; Total:
+                    <span x-text="formattedTotalTime"></span>
                 </p>
             </div>
             <div>
@@ -147,7 +148,16 @@
                         }
                     },
 
+                    get formattedTotalTime() {
+                        let minutes = Math.floor(this.totalSeconds / 60);
+                        let seconds = this.totalSeconds % 60;
+                        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+                    },
+
+                    totalSeconds: 0,
+
                     startTimer() {
+                        this.totalSeconds = 0;
                         if (this.durationMinutes <= 0) {
                             // Do not start the timer if durationMinutes is 0 or less
                             return;
@@ -176,6 +186,7 @@
                             intention,
                         );
                         this.interval = setInterval(() => {
+                            this.totalSeconds++;
                             this.remainingSeconds--;
                             this.updateSliderValue(); // Update the slider value
 
