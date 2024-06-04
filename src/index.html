@@ -258,16 +258,12 @@
                         this.durationMinutes = 0;
                         this.remainingSeconds = 0;
                         const timestamp = generateUniqueTimestamp();
-                        const actualEndTime = new Date().toLocaleTimeString(
-                            "en-US",
-                            {
-                                hour12: false,
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            },
-                        ); // HH:mm
-                        updateSessionWithActualEndTime(
-                            timestamp,
+                        const actualEndTime = new Date().toLocaleTimeString("en-US", {
+                            hour12: false,
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }); // HH:mm
+                        updateSessionWithActualEndTime(timestamp, actualEndTime);
                             actualEndTime,
                         );
                         this.intention = "";
