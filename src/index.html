@@ -264,8 +264,15 @@
                             minute: "2-digit",
                         }); // HH:mm
                         updateSessionWithActualEndTime(timestamp, actualEndTime);
+                    
+                        // Generate the iCal event and copy it to the clipboard
+                        const iCalEvent = generateICalEvent(
+                            this.startTime,
                             actualEndTime,
+                            this.intention
                         );
+                        navigator.clipboard.writeText(iCalEvent);
+                        console.log("iCal event copied to clipboard:", iCalEvent);
                         this.intention = "";
                     },
 
@@ -277,6 +284,39 @@
                         this.updateSliderValue(); // Update the slider value when the user changes it
                     },
                 };
+            }
+            
+            function generateICalEvent(startTime, endTime, intention) {
+                const now = new Date();
+                const startDate = new Date(now);
+                const endDate = new Date(now);
+            
+                // Parse the startTime and endTime strings
+                const [startHours, startMinutes] = startTime.split(':').map(Number);
+                const [endHours, endMinutes] = endTime.split(':').map(Number);
+            
+                // Set the hours and minutes for the start and end dates
+                startDate.setUTCHours(startHours, startMinutes, 0, 0);
+                endDate.setUTCHours(endHours, endMinutes, 0, 0);
+            
+                // Format the start and end dates in the correct iCal format
+                const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            
+                const startTimeISO = formatDate(startDate);
+                const endTimeISO = formatDate(endDate);
+            
+                const iCalEvent = [
+                    'BEGIN:VCALENDAR',
+                    'VERSION:2.0',
+                    'BEGIN:VEVENT',
+                    `DTSTART:${startTimeISO}`,
+                    `DTEND:${endTimeISO}`,
+                    `SUMMARY:${intention}`,
+                    'END:VEVENT',
+                    'END:VCALENDAR'
+                ].join('\n');
+            
+                return iCalEvent;
             }
 
             function generateUniqueTimestamp() {
