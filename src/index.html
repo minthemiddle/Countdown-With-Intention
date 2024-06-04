@@ -115,6 +115,7 @@
                     interval: null,
                     isRunning: false,
                     intention: "",
+                    startTime: null,
 
                     get formattedDuration() {
                         let minutes = Math.floor(
@@ -171,8 +172,7 @@
 
                         this.isRunning = true;
                         this.remainingSeconds = this.durationMinutes * 60;
-                        const day = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-                        const startingTime = new Date().toLocaleTimeString(
+                        this.startTime = new Date().toLocaleTimeString(
                             "en-US",
                             {
                                 hour12: false,
@@ -180,6 +180,8 @@
                                 minute: "2-digit",
                             },
                         ); // HH:mm
+                        const day = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+                        const startingTime = this.startTime;
                         const initialDuration = this.durationMinutes;
                         const initialEndTime = this.endTime;
                         const timestamp = generateUniqueTimestamp();
