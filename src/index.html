@@ -296,21 +296,33 @@
                 const [endHours, endMinutes] = endTime.split(':').map(Number);
             
                 // Set the hours and minutes for the start and end dates
-                startDate.setUTCHours(startHours, startMinutes, 0, 0);
-                endDate.setUTCHours(endHours, endMinutes, 0, 0);
+                startDate.setHours(startHours, startMinutes, 0, 0);
+                endDate.setHours(endHours, endMinutes, 0, 0);
+                
+                // Apply timezone offset to start and end dates
+                  const timezoneOffsetMinutes = new Date().getTimezoneOffset();
+                  startDate.setMinutes(startDate.getMinutes() - timezoneOffsetMinutes);
+                  endDate.setMinutes(endDate.getMinutes() - timezoneOffsetMinutes);
             
                 // Format the start and end dates in the correct iCal format
-                const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').slice(0, 15);
             
-                const startTimeISO = formatDate(startDate);
-                const endTimeISO = formatDate(endDate);
+                const startTimeLocal = formatDate(startDate);
+                const endTimeLocal = formatDate(endDate);
+            
+                // Get the local timezone identifier
+                const timezoneIdentifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
             
                 const iCalEvent = [
                     'BEGIN:VCALENDAR',
                     'VERSION:2.0',
+                    'PRODID:-//mbeu//Countdown With Intention//EN',
+                    'CALSCALE:GREGORIAN',
                     'BEGIN:VEVENT',
-                    `DTSTART:${startTimeISO}`,
-                    `DTEND:${endTimeISO}`,
+                    `UID:${generateUniqueTimestamp()}@martinbetz.eu`,
+                    `DTSTAMP:${formatDate(new Date())}Z`,
+                    `DTSTART;TZID=${timezoneIdentifier}:${startTimeLocal}`,
+                    `DTEND;TZID=${timezoneIdentifier}:${endTimeLocal}`,
                     `SUMMARY:${intention}`,
                     'END:VEVENT',
                     'END:VCALENDAR'
