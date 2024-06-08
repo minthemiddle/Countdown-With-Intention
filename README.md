@@ -10,7 +10,8 @@ Hear 1 beep when 1 minute left.
 Hear 2 beeps when 30 seconds left.  
 Hear 3 beeps at the end of countdown.
 See counting up time after countdown reaches zero.  
-Hear 1 beep every 30 negative seconds.
+Hear 1 beep every 30 negative seconds.  
+Copies details of stopped countdown to clipboard in iCal format.  
 
 **Screenshot**  
 ![Screenshot](screenshot-positive.png)
