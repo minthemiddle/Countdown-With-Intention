@@ -21,7 +21,8 @@
         "title": "Countdown With Intention",
         "width": 400,
         "height": 300,
-        "resizable": false
+        "resizable": false,
+        "alwaysOnTop": true
       }
     ],
     "macOSPrivateApi": true,

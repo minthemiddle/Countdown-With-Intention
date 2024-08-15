@@ -5,6 +5,7 @@ Set the time.
 Add your intention, e.g. "Finish chapter 📖".  
 See the end time of the countdown.  
 Start the countdown.  
+The countdown will always be on top.  
 See the total elapsed time.  
 Hear 1 beep when 1 minute left.  
 Hear 2 beeps when 30 seconds left.  
