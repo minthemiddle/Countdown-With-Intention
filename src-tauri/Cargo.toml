@@ -1,6 +1,6 @@
 [package]
 name = "countdown_with_intention"
-version = "1.4.0"
+version = "1.5.0"
 description = "A Countdown Timer With Intention"
 authors = ["Martin Betz"]
 edition = "2021"
